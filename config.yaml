@@ -1,0 +1,13 @@
+# 服务基础配置
+server:
+  # 服务地址
+  address: ":10601"
+  # 数据接收缓冲区默认大小，单位 k
+  bufLen: 1
+  # 数据接收缓冲区最大容量, 单位 k, 默认 10240k 即 10M
+  bufMaxLen: 16
+logger:
+  stdout: false
+  file:
+    dir: "/tmp/"
+    type: "server"

@@ -103,18 +103,20 @@ func closeConnection(conn net.Conn) {
 
 // 连接消息发送处理函数
 func handleWriteConnection(tcpConn *packet.TcpConn) {
-	select {
-	case msg := <-tcpConn.WritableEventChan:
-		if msg == nil {
-			// chan关闭了
-			log.Println("Error Writing 连接已经关闭")
-			return
-		}
-		if tcpConn.Closed {
-			goto End
-		}
-		if err := tcpConn.SendMessageDirect(msg); err != nil {
-			log.Println("Error Writing 消息发送失败", err.Error())
+	for {
+		select {
+		case msg := <-tcpConn.WritableEventChan:
+			if msg == nil {
+				// chan关闭了
+				log.Println("Error Writing 连接已经关闭")
+				return
+			}
+			if tcpConn.Closed {
+				goto End
+			}
+			if err := tcpConn.SendMessageDirect(msg); err != nil {
+				log.Println("Error Writing 消息发送失败", err.Error())
+			}
 		}
 	}
 End:

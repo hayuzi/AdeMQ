@@ -51,7 +51,7 @@ func handleConnection(conn net.Conn, conf *Config) {
 	// 客户端回收结果也会是类似的处理方式
 	var (
 		// TcpConn 实现了 io.reader 接口，我们可以用自己封装的 buffer 来处理
-		tcpConn     = packet.New(conn, conf.BufLen, conf.BufMaxLen)
+		tcpConn     = packet.New(conn, conf.BufLen*1024, conf.BufMaxLen*1024)
 		headBuf     []byte
 		contentSize int
 		contentBuf  []byte
@@ -60,7 +60,7 @@ func handleConnection(conn net.Conn, conf *Config) {
 	defer tcpConn.Close()
 
 	// 开启向该连接发送消息的协程, 阻塞监听消息, 如果连接关闭，则退出
-	go handleWriteConnection(tcpConn)
+	// go handleWriteConnection(tcpConn)
 
 	// 循环阻塞读取消息, 读取到的消息追加存储到消息体中, 待消息收满之后, 发送给程序处理
 	for {
@@ -88,6 +88,7 @@ func handleConnection(conn net.Conn, conf *Config) {
 				// 将完整的消息体内容读取到缓冲区，进行后续处理
 				// TODO 分发数据并处理，处理过程中涉及到的消息返回需要设计整体架构
 				contentBuf = tcpConn.Read(packet.ConstHeadSize, contentSize)
+				// 数据回写（ 读-写阻塞模型）
 				fmt.Println(string(contentBuf))
 				continue
 			}

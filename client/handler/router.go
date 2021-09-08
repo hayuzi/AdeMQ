@@ -5,6 +5,7 @@ import (
 )
 
 func initHelpInfo() map[string]string {
+	// TODO 新命令都需要注入进来
 	// 注入帮助信息（请按照字典顺序处理）
 	cmdHelp := make(map[string]string)
 	cmdHelp[commands.ConstHelp] = commands.DescHelp()

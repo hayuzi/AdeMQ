@@ -8,6 +8,7 @@ import (
 func DescPing() string {
 	return `
 ping:
+    命令介绍:    向远程服务器发送连接消息
     命令格式:    ping
     命令参数:    无`
 }

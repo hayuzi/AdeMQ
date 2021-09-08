@@ -51,5 +51,8 @@ func (wc *WinClient) handleCommand(cmdStr string) {
 	cmd := wc.Parser.Parse(cmdStr)
 	ret := wc.Dispatcher.Dispatch(cmd, wc.Remote)
 	// 得到结果直接输出到标准输出
+	if ret == "" {
+		return
+	}
 	_, _ = fmt.Fprintln(os.Stdout, ret)
 }

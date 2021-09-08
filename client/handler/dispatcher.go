@@ -10,25 +10,25 @@ type HandleFunc func(context context.Context, params ...string) interface{}
 
 type Dispatcher struct {
 	HelpInfo map[string]string
-	History  []string
+	History  *CmdHistory
 	Handlers map[string]HandleFunc
 }
 
 func NewDispatcher() *Dispatcher {
 	return &Dispatcher{
 		HelpInfo: initHelpInfo(),
-		History:  make([]string, 0),
+		History:  NewCmdHistory(),
 		Handlers: initHandlers(),
 	}
 }
 
 func (d *Dispatcher) Dispatch(cmd *ParsedCmd, remote *remote.Remote) interface{} {
-	// 拦截空数据
+	// 拦截空命令
 	if cmd.Cmd == "" {
 		return ""
 	}
-	// TODO 历史记录计入到数据结构中
-	d.History = append(d.History, cmd.Cmd)
+	// 历史记录计入到数据结构中
+	d.History.Push(cmd.Cmd)
 
 	// 正式执行函数
 	fn, ok := d.Handlers[cmd.Cmd]
@@ -47,7 +47,7 @@ func (d *Dispatcher) injectSpecialContext(ctx context.Context, cmd string) conte
 	case commands.ConstHelp:
 		ctx = context.WithValue(ctx, commands.ConstHelp, d.HelpInfo)
 	case commands.ConstHistory:
-		ctx = context.WithValue(ctx, commands.ConstHistory, d.History)
+		ctx = context.WithValue(ctx, commands.ConstHistory, d.History.All())
 	}
 	return ctx
 }

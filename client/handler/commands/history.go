@@ -3,24 +3,26 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
 )
 
 func DescHistory() string {
 	return `
 history:
+    命令介绍:    获取历史命令记录
     命令格式:    history
     命令参数:    无`
 }
 
 func History(ctx context.Context, params ...string) interface{} {
 	history := ctx.Value(ConstHistory)
-	his, ok := history.([]string)
+	cmdHis, ok := history.([]interface{})
 	if !ok {
 		return "Error: history error"
 	}
 	ret := ""
-	for idx, val := range his {
-		ret += fmt.Sprintf("%d :   %s\n", idx, val)
+	for idx, val := range cmdHis {
+		ret += fmt.Sprintf("%d    %s\n", idx, val)
 	}
-	return ret
+	return strings.TrimSuffix(ret, "\n")
 }

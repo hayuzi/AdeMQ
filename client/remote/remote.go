@@ -3,6 +3,8 @@ package remote
 import (
 	"encoding/binary"
 	"errors"
+	"flag"
+	"io"
 	"log"
 	"net"
 	"time"
@@ -26,9 +28,11 @@ type Remote struct {
 	ResponseChanClosed bool        // 远程结果队列是否关闭
 }
 
+var address = flag.String("address", "127.0.0.1:10601", "远程服务端地址")
+
 func NewRemote() *Remote {
 	// TODO 远程连接的地址，需要通过，启动命令的时候给
-	conn, err := net.DialTimeout("tcp", "127.0.0.1:10601", 5*time.Second)
+	conn, err := net.DialTimeout("tcp", *address, 5*time.Second)
 	if err != nil {
 		panic("服务器连接失败")
 	}
@@ -230,6 +234,9 @@ func (r *Remote) ReadFromConn() (int, error) {
 	// 此处如果传入读取的缓冲区空闲长度为0，会陷入死循环， 所以前面做了扩容以及异常处理
 	n, err := r.Conn.Read(r.readBuf[r.readEnd:])
 	if err != nil {
+		if err == io.EOF {
+			r.Close()
+		}
 		return n, err
 	}
 	r.readEnd += n

@@ -5,7 +5,6 @@ import (
 	"github.com/AdeMQ/protocol/packet"
 	"log"
 	"net"
-	"time"
 )
 
 type Config struct {
@@ -39,7 +38,6 @@ func Run(conf *Config) (err error) {
 // 连接处理函数
 func handleConnection(conn net.Conn, conf *Config) {
 	defer closeConnection(conn)
-	_ = conn.SetReadDeadline(time.Now().Add(2 * time.Minute))
 
 	// TCP数据包边界问题（俗称TCP粘包问题）
 	// 由于 TCP 本身是面向字节流的，无法理解上层的业务数据，所以在底层是无法保证数据包不被拆分和重组的，

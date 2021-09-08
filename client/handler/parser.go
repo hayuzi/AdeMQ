@@ -30,9 +30,9 @@ func (p *Parser) Parse(cmdStr string) *ParsedCmd {
 		if str == "" || str == " " {
 			continue
 		}
-		// 如果命令字段未解析，先解析命令
+		// 如果命令字段未解析，先解析命令，忽略大小写
 		if !cmdStored {
-			parsedCmd.Cmd = str
+			parsedCmd.Cmd = strings.ToLower(str)
 			cmdStored = true
 			continue
 		}
